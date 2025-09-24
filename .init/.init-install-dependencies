@@ -1,0 +1,4 @@
+{
+    "command": "source venv/bin/activate && pip install -r requirements.txt",
+    "working_directory": "/home/kavia/workspace/code-generation/qa-agent-integration-with-mcp-server-36136-36145/q_and_a_backend"
+}
