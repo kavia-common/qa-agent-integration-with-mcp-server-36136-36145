@@ -21,19 +21,33 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from django.views.decorators.csrf import csrf_exempt
 
+OCEAN_THEME = {
+    "name": "Ocean Professional",
+    "primary": "#2563EB",
+    "secondary": "#F59E0B",
+    "error": "#EF4444",
+    "background": "#f9fafb",
+    "surface": "#ffffff",
+    "text": "#111827",
+}
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('api.urls')),
+    path("admin/", admin.site.urls),
+    path("api/", include("api.urls")),
 ]
 
 schema_view = get_schema_view(
-   openapi.Info(
-      title="My API",
-      default_version='v1',
-      description="Test description",
-   ),
-   public=True,
-   permission_classes=(permissions.AllowAny,),
+    openapi.Info(
+        title="Q&A Agent API",
+        default_version="v1",
+        description=(
+            "Modern REST API for a Q&A agent with MCP integration.\n\n"
+            "Theme: Ocean Professional (blue & amber accents)."
+        ),
+        x_logo={"url": "https://dummyimage.com/200x40/2563EB/ffffff&text=Q%26A+Agent"},
+    ),
+    public=True,
+    permission_classes=(permissions.AllowAny,),
 )
 
 def get_full_url(request):
@@ -41,7 +55,7 @@ def get_full_url(request):
     host = request.get_host()
     forwarded_port = request.META.get("HTTP_X_FORWARDED_PORT")
 
-    if ':' not in host and forwarded_port:
+    if ":" not in host and forwarded_port:
         host = f"{host}:{forwarded_port}"
 
     return f"{scheme}://{host}"
@@ -51,17 +65,23 @@ def dynamic_schema_view(request, *args, **kwargs):
     url = get_full_url(request)
     view = get_schema_view(
         openapi.Info(
-            title="My API",
-            default_version='v1',
-            description="API Docs",
+            title="Q&A Agent API",
+            default_version="v1",
+            description=(
+                "Modern REST API for a Q&A agent with MCP integration.\n\n"
+                f"Theme: {OCEAN_THEME['name']} (primary {OCEAN_THEME['primary']}, "
+                f"secondary {OCEAN_THEME['secondary']})."
+            ),
+            x_logo={"url": "https://dummyimage.com/200x40/2563EB/ffffff&text=Q%26A+Agent"},
         ),
         public=True,
         url=url,
+        permission_classes=(permissions.AllowAny,),
     )
-    return view.with_ui('swagger', cache_timeout=0)(request)
+    return view.with_ui("swagger", cache_timeout=0)(request)
 
 urlpatterns += [
-    re_path(r'^docs/$', dynamic_schema_view, name='schema-swagger-ui'),
-    re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
-    re_path(r'^swagger\.json$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r"^docs/$", dynamic_schema_view, name="schema-swagger-ui"),
+    re_path(r"^redoc/$", schema_view.with_ui("redoc", cache_timeout=0), name="schema-redoc"),
+    re_path(r"^swagger\.json$", schema_view.without_ui(cache_timeout=0), name="schema-json"),
 ]
